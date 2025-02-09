@@ -98,4 +98,4 @@ while not found:
 
 ## Solution:
 
-FL1TZ{x0rr_a1n't_4_th3_w3ak}
+FL1TZ{e's_Ea5y_bR0}

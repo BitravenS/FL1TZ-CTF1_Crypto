@@ -48,7 +48,6 @@ if __name__ == "__main__":
 
     decrypted = decrypt(message, shift)
     print(f"Decrypted: {decrypted}")
-
 ```
 
 ## Solution:

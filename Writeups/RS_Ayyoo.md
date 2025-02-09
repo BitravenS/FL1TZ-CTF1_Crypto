@@ -71,7 +71,6 @@ for _ in range(50):
             break
     if char == "}":
         break
-
 ```
 
 ## Solution:

@@ -1,101 +1,211 @@
-# RSEEE
+# Frou5 Li Tnagguez
 
 ## Description
 
-> We all know what happens when e is small. So you won't need it, *right?*
+> The FBI cracked down on a dangerous cybercrime organization that used to go by the name of *'Frou5 Li Tnagguez'.*
 > 
-> Wrap whatever you find in **FL1TZ{}***
+> This organization was two steps ahead though, and got rid of all the evidence before the FBI could get to it, **except for a single poster** that was left behind.
 
-- **Points**: 400
-- **Given Files:** Output & source code
+- **Points**: 750
+- **Given Files:** picture & ciphertext
 
 ## Goal of the challenge
 
-The initial goal of the challenge was to make the player think smartly about the upper bounds of the bruteforce, but as it remained unsolved for hours I had to hint that e < 15, which made it feasible to let it run for a bit then manually increment e.
+The goal here is to understand the steps it took to create a cipher, and to reverse the steps in a particular manner while leveraging knowledge and general understanding of the challenge.
 
 ---
 
-### Output
+### Markdown
 
-n = 97127064200566540941928678594867636803398339677296908159077174895749191256799557351118036403508090866875498452714025619485895754802360340694285870549792955221439057386006929730315481568817059312364553914087684084487261722012727425926234514741860807367636771201908481073590517580414773610725772307291721042623
+```markdown
+# Frou5 Li Tnagguez
 
-ct = 48245654321634701455895626304137847336996478297713840323661725059931579994616044368900079069592410947349116320004205830982263945363378614707701788128068692459565222022474760276489584283877823711904548049874221945723734099832204867825444694649757841525189302154560568102716182029919362349113976190626358050904
+## Ciphertext
 
-### Source Code
+OXCCTQVOVHFHAJUKETHNYITZBVWZRUGSOPDCBTZPLNNJPFSVDSVFCZFDYQSXYQDXBWNTGLMYTRUOMQDUQFXUWPONLJMMACUWPNDNRVXDTVDUAGKROABCAWMOCYGFJDGQNFPMUHFTFLOLKUXKHCJUFMITIEGIMNSIRZUUYFPQWRDFQPTGJDSOYGYGBRHIKLHKNTOXFBLEWBQZQUMVPOLYBBKFVDULCHXJFJICQHYRBPDDTSASWOPPEMQAXNGFSFCJTXWXVUSTZFYZKFMGLKZNMAEHHLGHYSLZHTZRSGAVZHFTMXTCMWBNYSKUCNSWHMBLUUPSFOBAARGCRDCJYCEYUZLPLRJSQT
 
-```python
-from Crypto.Util.number import getPrime, bytes_to_long
-from math import gcd
+## Rules Reminder
 
-p, q = getPrime(512), getPrime(512)
+- Numbers are spelled out (example: 8 -> EIGHT)
+- _ becomes UNDRSCR
+- } Becomes CLSBRCKT
+- { becomes OPNBRCKT
 
-e = 5
-phi = (p - 1) * (q - 1)
-while gcd(e, phi) != 1:
-    e += 2
 
-d = pow(e, -1, phi)
-n = p * q
-
-FLAG = "????????????"
-assert len(FLAG) == 12
-
-m = bytes_to_long(FLAG.encode())
-ct = pow(m, e, n)
-print(f"{n = }\n\n{ct = }") 
 ```
+
+### Picture
+
+![a](/home/bitraven/Documents/FL1TZ-CTF1_Crypto/Crypto/frou5_li_tnagguez/flt.png)
 
 ---
 
 ## Solution Walkthrough
 
-We know that  $c = m^e\mod n$ is equivalent to saying $m^e = c +k*n \ for \ k \ in \ \mathbb{N} $. We don't know *e* but we know that it isn't that far from 5.
+This is insiperd by a challenge called **Let's Play Scrabble 1** in ringzer0ctf, but with a twist, *literally*.
 
-Since we have to bruteforce k and e at the same time, an upper bound for k has to be set. What is that upper bound? It's **the ascii string that could be represented as the largest integer** - ct divided by n, approximatey.
-
-so our upper bound is $(255255...255^{current\_e\_value}-ct)/n$. If the bound is reached, we increment e by 2 and calculate the $eth \ root$ of $ct+n*i$ for i in range(upper_bound)
-
-In hindsight, this wan't a well implemented challenge as there is a much easier solution which is to just set up a resonably high bound and increment when it's reached :/
+You could recreate the encryption scheme in python and, since the keyword is an english word, you could generate all alphabet keys and find the one which decodes the flag. You'll know it since it is unbelievably unlikely for 2 keys to have the same decoded word in the plaintext., basically find one that has the string **FLONETZOPNBRCKT**
 
 ## Solver
 
 ```python
-import gmpy2
-from Crypto.Util.number import long_to_bytes
+import json
+import os
+import string
+
+# Get the directory of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+file_path = os.path.join(script_dir, "words_dictionary.json")
+
+with open(file_path, "r") as f:
+    words = json.load(f).keys()
+
+flag = "FL1TZ{B0RN_2_N4GU3Z_4ND_W1LL_4LW4Y5_N4GU3Z_B4BY}"
 
 
-def is_perfect_nth_root(number, exp):
-    if number < 0:
-        # Negative numbers cannot have even roots
-        return False
+class Hopper:
+    def __init__(self, keyword):
+        self.alpha = string.ascii_uppercase
+        self.keyword = keyword.upper()
+        self.initialAlpha()
 
-    # Compute the integer nth root
-    root, exact = gmpy2.iroot(gmpy2.mpz(number), exp)
-    return root, exact  # True if it's a perfect nth root, False otherwise
+    def initialAlpha(self):
+        for i in self.keyword:
+            self.shuffle(i)
+        self.initial = self.alpha
+
+    def shuffle(self, letter):
+        i = 0
+        try:
+            i = self.alpha.index(letter)
+        except Exception as e:
+            print(f"{letter}: {e}")
+        self.alpha = self.alpha[:i][::-1] + self.alpha[i] + self.alpha[i + 1 :][::-1]
+
+    def encrypt(self, plaintext):
+        self.alpha = self.initial
+        plaintext = plaintext.upper()
+        ciphertext = ""
+        for i in plaintext:
+            pos = string.ascii_uppercase.index(i)
+            ciphertext += self.alpha[pos]
+            self.shuffle(i)
+        return ciphertext
+
+    def decrypt(self, ciphertext):
+        self.alpha = self.initial
+        plaintext = ""
+        for i in ciphertext:
+            pos = self.alpha.index(i)
+            corLet = string.ascii_uppercase[pos]
+            plaintext += corLet
+            self.shuffle(corLet)
+        return plaintext
 
 
-n = 97127064200566540941928678594867636803398339677296908159077174895749191256799557351118036403508090866875498452714025619485895754802360340694285870549792955221439057386006929730315481568817059312364553914087684084487261722012727425926234514741860807367636771201908481073590517580414773610725772307291721042623
+def flag_format(f):
+    ret = ""
+    for letter in f:
+        if letter.isalpha():
+            ret += letter
+        else:
+            match letter:
+                case "0":
+                    ret += "ZERO"
+                case "1":
+                    ret += "ONE"
+                case "2":
+                    ret += "TWO"
+                case "3":
+                    ret += "THREE"
+                case "4":
+                    ret += "FOUR"
+                case "5":
+                    ret += "FIVE"
+                case "6":
+                    ret += "SIX"
+                case "7":
+                    ret += "SEVEN"
+                case "8":
+                    ret += "EIGHT"
+                case "9":
+                    ret += "NINE"
+                case "_":
+                    ret += "UNDRSCR"
+                case "{":
+                    ret += "OPNBRCKT"
+                case "}":
+                    ret += "CLSBRCKT"
+                case _:
+                    raise ValueError(f"Invalid character: {letter}")
+    return ret
 
-ct = 48245654321634701455895626304137847336996478297713840323661725059931579994616044368900079069592410947349116320004205830982263945363378614707701788128068692459565222022474760276489584283877823711904548049874221945723734099832204867825444694649757841525189302154560568102716182029919362349113976190626358050904
+
+def flag_unformat(f):
+    ret = ""
+    temp = f
+    while temp:
+        if temp.startswith("ZERO"):
+            ret += "0"
+            temp = temp[4:]
+        elif temp.startswith("ONE"):
+            ret += "1"
+            temp = temp[3:]
+        elif temp.startswith("TWO"):
+            ret += "2"
+            temp = temp[3:]
+        elif temp.startswith("THREE"):
+            ret += "3"
+            temp = temp[5:]
+        elif temp.startswith("FOUR"):
+            ret += "4"
+            temp = temp[4:]
+        elif temp.startswith("FIVE"):
+            ret += "5"
+            temp = temp[4:]
+        elif temp.startswith("SIX"):
+            ret += "6"
+            temp = temp[3:]
+        elif temp.startswith("SEVEN"):
+            ret += "7"
+            temp = temp[5:]
+        elif temp.startswith("EIGHT"):
+            ret += "8"
+            temp = temp[5:]
+        elif temp.startswith("NINE"):
+            ret += "9"
+            temp = temp[4:]
+        elif temp.startswith("UNDRSCR"):
+            ret += "_"
+            temp = temp[7:]
+        elif temp.startswith("OPNBRCKT"):
+            ret += "{"
+            temp = temp[8:]
+        elif temp.startswith("CLSBRCKT"):
+            ret += "}"
+            temp = temp[8:]
+        else:
+            ret += temp[0]
+            temp = temp[1:]
+    return ret
 
 
-e = 5
-found = False
-i = 0
-while not found:
-    for i in range(10**7):
-        if i % 100000 == 0:
-            print(f"e: {e}, i: {i}")
-        pt, exact = is_perfect_nth_root(ct + n * i, e)
-        if exact:
-            try:
-                print(f"Flag found: {long_to_bytes(pt).decode()}")
-                found = True
-            except UnicodeDecodeError:
-                continue
-    e += 2
+def main():
+    cipher = "OXCCTQVOVHFHAJUKETHNYITZBVWZRUGSOPDCBTZPLNNJPFSVDSVFCZFDYQSXYQDXBWNTGLMYTRUOMQDUQFXUWPONLJMMACUWPNDNRVXDTVDUAGKROABCAWMOCYGFJDGQNFPMUHFTFLOLKUXKHCJUFMITIEGIMNSIRZUUYFPQWRDFQPTGJDSOYGYGBRHIKLHKNTOXFBLEWBQZQUMVPOLYBBKFVDULCHXJFJICQHYRBPDDTSASWOPPEMQAXNGFSFCJTXWXVUSTZFYZKFMGLKZNMAEHHLGHYSLZHTZRSGAVZHFTMXTCMWBNYSKUCNSWHMBLUUPSFOBAARGCRDCJYCEYUZLPLRJSQT"
+    for word in words:
+        hopper = Hopper(word)
+        decipher = hopper.decrypt(cipher)
+        if "FLONETZOPNBRCKT" in decipher:
+            print(f"KEY: {word}")
+            print(f"FLAG: {flag_unformat(decipher)}")
+            break
+
+
+if __name__ == "__main__":
+    main()
+
 ```
 
 ## Solution:
 
-FL1TZ{x0rr_a1n't_4_th3_w3ak}
+THEREISANONGOINGRACETOPUSHTHEBITCOINENCRYPTIONTOITSLIMITSCALLEDTHE32BTCCHALLENGE **FL1TZ{B0RN_2_N4GU3Z_4ND_W1LL_4LW4Y5_N4GU3Z_B4BY}** ITWENTUPTOALMOST1000BTCFORANY1BRAVEENOUGHTOGIVEITATRYANDYOUREDAMNRIGHTFROU5LITNAGGUEZWILLBEONTHEFRONTLINES

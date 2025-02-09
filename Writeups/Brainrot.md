@@ -1,4 +1,4 @@
-# RSEEE
+# Brainrot
 
 ## Description
 
@@ -152,7 +152,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 ```
 
 ---
@@ -239,7 +238,6 @@ for i in range(1, 3):
 responses = [flag] + responses
 flag = b"".join(responses)
 print(f"{flag=}")
-
 ```
 
 ## Solution:

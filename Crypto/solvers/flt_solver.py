@@ -140,24 +140,14 @@ def flag_unformat(f):
 
 
 def main():
-    KEY = "kleptomania"
-    assert KEY in words
-
-    story1 = "there is an ongoing race to push the bitcoin encryption to its limits called the 32 btc challenge".replace(
-        " ", ""
-    ).upper()
-    story2 = "it went up to almost 1000 btc for anyone brave enough to give it a try and youre damn right frou5 li tnagguez will be on the frontlines".replace(
-        " ", ""
-    ).upper()
-    FLAG = story1 + flag + story2
-    print(f"KEY: {KEY}")
-    hopper = Hopper(KEY)
-    cipher = hopper.encrypt(flag_format(FLAG))
-    print(f"FLAG: {cipher}")
-    decipher = hopper.decrypt(cipher)
-    print("Deciphered:", decipher)
-    decode = flag_unformat(decipher)
-    print("Decoded:", decode)
+    cipher = "OXCCTQVOVHFHAJUKETHNYITZBVWZRUGSOPDCBTZPLNNJPFSVDSVFCZFDYQSXYQDXBWNTGLMYTRUOMQDUQFXUWPONLJMMACUWPNDNRVXDTVDUAGKROABCAWMOCYGFJDGQNFPMUHFTFLOLKUXKHCJUFMITIEGIMNSIRZUUYFPQWRDFQPTGJDSOYGYGBRHIKLHKNTOXFBLEWBQZQUMVPOLYBBKFVDULCHXJFJICQHYRBPDDTSASWOPPEMQAXNGFSFCJTXWXVUSTZFYZKFMGLKZNMAEHHLGHYSLZHTZRSGAVZHFTMXTCMWBNYSKUCNSWHMBLUUPSFOBAARGCRDCJYCEYUZLPLRJSQT"
+    for word in words:
+        hopper = Hopper(word)
+        decipher = hopper.decrypt(cipher)
+        if "FLONETZOPNBRCKT" in decipher:
+            print(f"KEY: {word}")
+            print(f"FLAG: {flag_unformat(decipher)}")
+            break
 
 
 if __name__ == "__main__":
