@@ -19,6 +19,8 @@ We go further from encryptions and closer to classic encoding. The goal is for t
 
 ### Picture
 
+Can be found in the challenge folder
+
 ![o](/home/bitraven/Documents/FL1TZ-CTF1_Crypto/Crypto/aneurysm/aneurysm.png)
 
 ---

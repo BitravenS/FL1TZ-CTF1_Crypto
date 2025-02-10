@@ -30,11 +30,11 @@ OXCCTQVOVHFHAJUKETHNYITZBVWZRUGSOPDCBTZPLNNJPFSVDSVFCZFDYQSXYQDXBWNTGLMYTRUOMQDU
 - _ becomes UNDRSCR
 - } Becomes CLSBRCKT
 - { becomes OPNBRCKT
-
-
 ```
 
 ### Picture
+
+Can be found in the challenge folder
 
 ![a](/home/bitraven/Documents/FL1TZ-CTF1_Crypto/Crypto/frou5_li_tnagguez/flt.png)
 
@@ -203,7 +203,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 ```
 
 ## Solution:

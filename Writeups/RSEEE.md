@@ -53,7 +53,7 @@ We know that  $c = m^e\mod n$ is equivalent to saying $m^e = c +k*n \ for \ k \ 
 
 Since we have to bruteforce k and e at the same time, an upper bound for k has to be set. What is that upper bound? It's **the ascii string that could be represented as the largest integer** - ct divided by n, approximatey.
 
-so our upper bound is $(255255...255^{current\_e\_value}-ct)/n$. If the bound is reached, we increment e by 2 and calculate the $eth \ root$ of $ct+n*i$ for i in range(upper_bound)
+so our upper bound is ${(255255...255^{current\_e\_value}-ct)}/n$. If the bound is reached, we increment e by 2 and calculate the $eth \ root$ of $ct+n*i$ for i in range(upper_bound)
 
 In hindsight, this wan't a well implemented challenge as there is a much easier solution which is to just set up a resonably high bound and increment when it's reached :/
 

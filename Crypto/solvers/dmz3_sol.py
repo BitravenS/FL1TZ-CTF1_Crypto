@@ -4,8 +4,8 @@ import base64
 import hashlib
 from Crypto.Util.number import bytes_to_long
 
-HOST = "localhost"
-PORT = 1413
+HOST = "ctf.fl1tz.me"
+PORT = 1010
 
 io = remote(HOST, PORT)
 

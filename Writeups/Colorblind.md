@@ -15,6 +15,8 @@ The goal is to sharpen the player's pattern recognitions skills and attention to
 
 ### Output
 
+Can be found in the challenge folder
+
 ![n =](/home/bitraven/Documents/FL1TZ-CTF1_Crypto/Crypto/colorblind/colorblind.png)
 
 ---
@@ -68,7 +70,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 ```
 
 ## Solution:
